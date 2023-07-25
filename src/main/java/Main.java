@@ -30,13 +30,13 @@ public class Main {
             String ans = scanner.next();
 
             if (ans.equals("0")) break;
-            if (!ans.equals("1") && !ans.equals("2")){
+            if (!ans.equals("1") && !ans.equals("2")) {
                 System.out.println("\nError: Попробуйте снова!");
                 continue;
             }
 
             //настройки игры
-            if(ans.equals("2")){
+            if (ans.equals("2")) {
 
             }
 
@@ -47,7 +47,6 @@ public class Main {
             game.renderMap();
 
             while (!game.actions.map.getIsSimulationOver()) {
-
 
 
                 System.out.println("Дальнейшие дейтсвия:\n" +

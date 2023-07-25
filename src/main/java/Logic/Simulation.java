@@ -61,6 +61,7 @@ public class Simulation {
 
                 System.out.print("Ввод: ");
                 System.out.println();
+                Thread.sleep(1800);
             }
 
 
@@ -73,7 +74,7 @@ public class Simulation {
 //                default -> System.out.println("Попробуйте снова");
 //            }
 
-            Thread.sleep(1800);
+
         }
 
 
