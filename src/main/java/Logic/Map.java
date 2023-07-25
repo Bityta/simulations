@@ -91,11 +91,6 @@ public class Map {
     //что то сделать
     public void step() {
 
-//        HashMap<Coordinate, Entity> temp = new HashMap<>(entityMap);
-
-
-//        copyObject(entityMap, temp);
-
 
         for (var entry : copyCreature(entityMap).entrySet()) {
 
