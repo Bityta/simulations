@@ -30,7 +30,15 @@ public class Main {
             String ans = scanner.next();
 
             if (ans.equals("0")) break;
-            if (!ans.equals("1") && !ans.equals("2")) continue;
+            if (!ans.equals("1") && !ans.equals("2")){
+                System.out.println("\nError: Попробуйте снова!");
+                continue;
+            }
+
+            //настройки игры
+            if(ans.equals("2")){
+
+            }
 
 
             System.out.println("\n" + "=".repeat(50) + "\n");
@@ -59,6 +67,7 @@ public class Main {
                     }
 
                     case "2" -> game.startSimulation();
+
                     case "3" -> {
                         System.out.println("=".repeat(50) + "\n");
                         game = new Simulation();
@@ -67,7 +76,7 @@ public class Main {
                     }
                     case "0" -> game.actions.map.setIsSimulationOver(true);
 
-                    default -> System.out.println("Попробуйте снова");
+                    default -> System.out.println("\nError: Попробуйте снова!\n");
                 }
             }
 

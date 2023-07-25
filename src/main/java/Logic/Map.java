@@ -23,8 +23,8 @@ public class Map {
         entityMap = new HashMap<>();
     }
 
-    private static final int widthMap = 4;
-    private static final int heightMap = 4;
+    private static final int widthMap = 12;
+    private static final int heightMap = 12;
 
 
     public Entity[][] getMap() {
