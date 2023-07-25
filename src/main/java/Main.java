@@ -6,8 +6,6 @@ public class Main {
     public static void main(String[] args) throws InterruptedException {
 
         System.out.println("");
-
-
         System.out.println("Привет, это 2д симульция мира.");
         System.out.println("Все довольно просто, для вас генерируется уникальная карта, на которой случайным образом расположены юниты за которымы Вы можете наблюдать.");
         System.out.println("Существует 2 типы объектов:");
@@ -15,49 +13,65 @@ public class Main {
         System.out.println("  - Предметы (деревья, трава и горы) ");
 
 
-
-
-
-
-
-
-
         System.out.println("");
-        System.out.println("Ваша первоначальная карта:\n");
-
-        Simulation game = new Simulation();
-        game.renderMap();
-
-        boolean isGameOver = false;
-
-        while (!isGameOver) {
+        System.out.println("=".repeat(50));
 
 
-            System.out.println("Дальнейшие дейтсвия:\n" +
-                    "1 - просимулировать и отрендерить один ход\n" +
-                    "2 - запустить бесконечный цикл симуляции и рендеринга\n" +
-                    "3 - перегенерировать текущую карту\n" +
-                    "0 - закончить игру");
-
-
+        while (true) {
+            Simulation game = new Simulation();
             Scanner scanner = new Scanner(System.in);
+            System.out.print("\nДальнейшие дейтсвия:\n" +
+                    "1 - начать новую симуляцию\n" +
+                    "2 - установить настройки симуляции\n" +
+                    "0 - завершить програму\n" +
+                    "Ввод: ");
 
-            System.out.print("Ввод: ");
-            switch (scanner.next()) {
 
-                case "1" -> game.nextTurn();
-                case "2" -> game.startSimulation();
-                case "3" -> {
-                    game = new Simulation();
-                    game.renderMap();
+            String ans = scanner.next();
+
+            if (ans.equals("0")) break;
+            if (!ans.equals("1") && !ans.equals("2")) continue;
+
+
+            System.out.println("\n" + "=".repeat(50) + "\n");
+
+            System.out.println("\u001B[36m" + " Ваша первоначальная карта: " + "\u001B[0m\n");
+            game.renderMap();
+
+            while (!game.actions.map.getIsSimulationOver()) {
+
+
+
+                System.out.println("Дальнейшие дейтсвия:\n" +
+                        "1 - просимулировать и отрендерить один ход\n" +
+                        "2 - запустить бесконечный цикл симуляции и рендеринга\n" +
+                        "3 - перегенерировать текущую карту\n" +
+                        "0 - закончить симульяцию");
+
+
+                scanner = new Scanner(System.in);
+
+                System.out.print("Ввод: ");
+                switch (scanner.next()) {
+
+                    case "1" -> {
+                        game.nextTurn();
+                    }
+
+                    case "2" -> game.startSimulation();
+                    case "3" -> {
+                        System.out.println("=".repeat(50) + "\n");
+                        game = new Simulation();
+                        System.out.println("\u001B[36m" + " Ваша новая первоначальная карта: " + "\u001B[0m\n");
+                        game.renderMap();
+                    }
+                    case "0" -> game.actions.map.setIsSimulationOver(true);
+
+                    default -> System.out.println("Попробуйте снова");
                 }
-                case "0" -> isGameOver = true;
-                default -> System.out.println("Попробуйте снова");
             }
+
         }
-
-
-
 
 
     }

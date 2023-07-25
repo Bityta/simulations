@@ -1,8 +1,8 @@
 package Logic;
 
 import Models.*;
-import Utils.ASrar.AStar;
-import Utils.ASrar.Node;
+import Utils.AStar;
+import Utils.Node;
 import Utils.Coordinate;
 
 import java.util.ArrayList;
@@ -16,20 +16,19 @@ public class Map {
     private Entity[][] map;
     private HashMap<Coordinate, Entity> entityMap;
 
+    protected boolean isSimulationOver = false;
+
     public Map() {
         map = new Entity[widthMap][heightMap];
         entityMap = new HashMap<>();
     }
 
-    private static final int widthMap = 10;
-    private static final int heightMap = 10;
+    private static final int widthMap = 4;
+    private static final int heightMap = 4;
+
 
     public Entity[][] getMap() {
         return map;
-    }
-
-    public HashMap<Coordinate, Entity> getEntityMap() {
-        return entityMap;
     }
 
     public void fillingMap() {
@@ -52,7 +51,6 @@ public class Map {
         return heightMap;
     }
 
-    //изменить название метода
     public void addEntity(Entity entity) {
 
 
@@ -64,14 +62,6 @@ public class Map {
             addEntity(entity);
         }
 
-
-    }
-
-    public void deleteEntity(Coordinate coordinate) {
-
-
-        entityMap.remove(coordinate);
-        getMap()[coordinate.getCoordinateX()][coordinate.getCoordinateY()] = null;
 
     }
 
@@ -88,16 +78,24 @@ public class Map {
 
     }
 
-    //что то сделать
+    public void deleteEntity(Coordinate coordinate) {
+
+        entityMap.remove(coordinate);
+        getMap()[coordinate.getCoordinateX()][coordinate.getCoordinateY()] = null;
+
+    }
+
     public void step() {
 
 
         for (var entry : getCreatureHashMap().entrySet()) {
 
+
+
             Coordinate coordinatesToTarget = getNearestTargetCoordinate(entry.getValue());
 
 
-            if (coordinatesToTarget == null || !checkExistenceEntity(entry) )continue;
+            if (coordinatesToTarget == null || !checkExistenceEntity(entry.getKey())) continue;
 
 
             Node initialNode = new Node(entry.getValue().getCoordinate().getCoordinateY(), entry.getValue().getCoordinate().getCoordinateX());
@@ -111,10 +109,13 @@ public class Map {
             List<Node> path = aStar.findPath();
 
             if (path.size() == 2) deleteEntity(coordinatesToTarget);
+            if (path.size() == 0) continue;
 
             deleteEntity(entry.getKey());
             entry.getValue().setCoordinate(new Coordinate(path.get(1).getCol(), path.get(1).getRow()));
             addEntity(entry.getValue());
+
+            updateSimulationOver();
 
         }
 
@@ -148,7 +149,20 @@ public class Map {
         return herbivoreList;
     }
 
-    //ошибки  + что то еще
+    private ArrayList<Predator> getPredatorArray() {
+
+        ArrayList<Predator> predatorList = new ArrayList<>();
+
+        for (var entry : entityMap.entrySet()) {
+
+            if (entry.getValue().getClass() == Predator.class) {
+                predatorList.add((Predator) entry.getValue());
+            }
+
+        }
+        return predatorList;
+    }
+
     private Coordinate getNearestTargetCoordinate(Entity myEntity) {
 
         int distance = 1000;
@@ -183,8 +197,6 @@ public class Map {
 
     }
 
-    //ошибки + название + что то еще
-
     private HashMap<Coordinate, Creature> getCreatureHashMap() {
 
         HashMap<Coordinate, Creature> temp = new HashMap<>();
@@ -198,7 +210,6 @@ public class Map {
         return temp;
     }
 
-    //изменить
     private int[][] getBlocksArray(Creature entity) {
 
         int[][] arr = null;
@@ -237,7 +248,7 @@ public class Map {
 
     }
 
-    private boolean checkExistenceEntity(java.util.Map.Entry<Coordinate, Creature> entity) {
+    private boolean checkExistenceEntity(Coordinate entity) {
 
         boolean flag = false;
 
@@ -247,5 +258,26 @@ public class Map {
 
         return flag;
     }
+
+    private void updateSimulationOver(){
+
+        if(getGrassArray().size() == 0 && getPredatorArray().size() == 0  ) {
+            isSimulationOver = true;
+        }
+
+        if(getHerbivoreArray().size() ==0 && getPredatorArray().size() >0 ){
+            isSimulationOver = true;
+        }
+
+    }
+
+    public boolean getIsSimulationOver() {
+        return isSimulationOver;
+    }
+
+    public void setIsSimulationOver(boolean isSimulationOver) {
+        this.isSimulationOver = isSimulationOver;
+    }
+
 
 }
