@@ -16,17 +16,43 @@ public class Actions {
         map.addEntity(new Grass());
         map.addEntity(new Grass());
         map.addEntity(new Grass());
+        map.addEntity(new Grass());
+        map.addEntity(new Grass());
+        map.addEntity(new Grass());
+        map.addEntity(new Grass());
+        map.addEntity(new Grass());
+        map.addEntity(new Grass());
+        map.addEntity(new Grass());
+        map.addEntity(new Grass());
+        map.addEntity(new Grass());
+        map.addEntity(new Grass());
+        map.addEntity(new Grass());
+        map.addEntity(new Grass());
 
         map.addEntity(new Tree());
         map.addEntity(new Tree());
+        map.addEntity(new Tree());
+        map.addEntity(new Tree());
+        map.addEntity(new Tree());
+        map.addEntity(new Tree());
+
+
+        map.addEntity(new Rock());
+        map.addEntity(new Rock());
+        map.addEntity(new Rock());
+        map.addEntity(new Rock());
+
+        map.addEntity(new Herbivore());
+        map.addEntity(new Herbivore());
+        map.addEntity(new Herbivore());
+        map.addEntity(new Herbivore());
+        map.addEntity(new Herbivore());
+        map.addEntity(new Herbivore());
+        map.addEntity(new Herbivore());
+        map.addEntity(new Herbivore());
 
         map.addEntity(new Predator());
-
-        map.addEntity(new Rock());
-        map.addEntity(new Rock());
-
-         map.addEntity(new Herbivore());
-        map.addEntity(new Herbivore());
+        map.addEntity(new Predator());
 
 
 

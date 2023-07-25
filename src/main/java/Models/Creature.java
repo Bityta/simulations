@@ -12,8 +12,6 @@ public abstract class Creature extends Entity{
 
 
 
-    public abstract boolean isPredator();
-
 
     protected abstract void makeMove();
 

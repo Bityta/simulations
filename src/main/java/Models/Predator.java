@@ -5,10 +5,7 @@ public class Predator extends Creature {
     public int attackPower = 5;
 
 
-    @Override
-    public boolean isPredator() {
-        return true;
-    }
+
     @Override
     public void nextStep(){
 //        getCoordinate().getCoordinateX() и getCoordinate().getCoordinateY()

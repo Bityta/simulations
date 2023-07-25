@@ -8,6 +8,7 @@ import Utils.Coordinate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Objects;
 
 
 public class Map {
@@ -87,101 +88,39 @@ public class Map {
 
     }
 
-
     //что то сделать
     public void step() {
 
 
-        for (var entry : copyCreature(entityMap).entrySet()) {
+        for (var entry : getCreatureHashMap().entrySet()) {
 
-            //скорость реализовать через цикл
+            Coordinate coordinatesToTarget = getNearestTargetCoordinate(entry.getValue());
+
+
+            if (coordinatesToTarget == null || !checkExistenceEntity(entry) )continue;
 
 
             Node initialNode = new Node(entry.getValue().getCoordinate().getCoordinateY(), entry.getValue().getCoordinate().getCoordinateX());
-
-            int rows = getWidthMap();
-            int cols = getHeightMap();
-
-            Coordinate test = null;
-
-            if (entry.getValue().getClass() == Herbivore.class) {
-                test = minDistanceGrass(entry.getValue());
-            } else if (entry.getValue().getClass() == Predator.class) {
-                test = minDistanceHerbivore(entry.getValue());
-            }
+            Node finalNode = new Node(coordinatesToTarget.getCoordinateY(), coordinatesToTarget.getCoordinateX());
 
 
-            Node finalNode;
-            if (test != null) {
-                finalNode = new Node(test.getCoordinateY(), test.getCoordinateX());
-            } else {
-                finalNode = new Node(entry.getValue().getCoordinate().getCoordinateY(), entry.getValue().getCoordinate().getCoordinateX());
-            }
-
-
-            AStar aStar = new AStar(rows, cols, initialNode, finalNode);
-
-
-            int[][] blocksArray = arrBlock(entry.getValue());
-
-
-            aStar.setBlocks(blocksArray);
+            AStar aStar = new AStar(getWidthMap(), getHeightMap(), initialNode, finalNode);
+            aStar.setBlocks(getBlocksArray(entry.getValue()));
 
 
             List<Node> path = aStar.findPath();
 
-            //вот тут делаем скорость
-            if (path.size() > 2) {
+            if (path.size() == 2) deleteEntity(coordinatesToTarget);
 
-                deleteEntity(entry.getKey());
-
-                //изменение координат
-                entry.getValue().setCoordinate(new Coordinate(path.get(1).getCol(), path.get(1).getRow()));
-
-                addEntity(entry.getValue());
-
-            } else if (path.size() == 2) {
-                //съесть ударить и тд
-                //для коровы пока что
-
-                deleteEntity(test);
-
-
-                deleteEntity(entry.getKey());
-
-                //изменение координат
-                entry.getValue().setCoordinate(new Coordinate(path.get(1).getCol(), path.get(1).getRow()));
-
-                addEntity(entry.getValue());
-
-            }
-
+            deleteEntity(entry.getKey());
+            entry.getValue().setCoordinate(new Coordinate(path.get(1).getCol(), path.get(1).getRow()));
+            addEntity(entry.getValue());
 
         }
 
-
     }
 
-    //изменить название
-    public int[][] newGetCell(Coordinate coordinate) {
-
-        int[][] arr = new int[entityMap.size() - 1][2];
-
-        int i = 0;
-        for (var entry : entityMap.entrySet()) {
-            if (coordinate != entry.getValue().getCoordinate()) {
-                arr[i][0] = entry.getValue().getCoordinate().getCoordinateX();
-                arr[i][1] = entry.getValue().getCoordinate().getCoordinateY();
-                i++;
-            }
-
-
-        }
-        return arr;
-    }
-
-    //изменить название
-    private ArrayList<Grass> setGrassArray() {
+    private ArrayList<Grass> getGrassArray() {
 
         ArrayList<Grass> grassList = new ArrayList<>();
 
@@ -195,8 +134,7 @@ public class Map {
         return grassList;
     }
 
-    //изменить название
-    private ArrayList<Herbivore> setHerbivoreArray() {
+    private ArrayList<Herbivore> getHerbivoreArray() {
 
         ArrayList<Herbivore> herbivoreList = new ArrayList<>();
 
@@ -210,95 +148,44 @@ public class Map {
         return herbivoreList;
     }
 
-    //ошибки + название + что то еще
+    //ошибки  + что то еще
+    private Coordinate getNearestTargetCoordinate(Entity myEntity) {
 
-    private Coordinate minDistanceHerbivore(Entity entity) {
+        int distance = 1000;
+        Entity entity = null;
 
-        int min = 1000;
-        Herbivore herbivored = null;
+        //неправильный мосив
+        if (myEntity.getClass() == Predator.class) {
+            for (Herbivore herbivore : getHerbivoreArray()) {
 
-        for (Herbivore herbivore : setHerbivoreArray()) {
+                if (distance > myEntity.getCoordinate().subtractionCoordinate(herbivore.getCoordinate())) {
+                    distance = myEntity.getCoordinate().subtractionCoordinate(herbivore.getCoordinate());
+                    entity = herbivore;
+                }
 
-            if (min > entity.getCoordinate().subtractionCoordinate(herbivore.getCoordinate())) {
-                min = entity.getCoordinate().subtractionCoordinate(herbivore.getCoordinate());
-                herbivored = herbivore;
             }
+        } else if (myEntity.getClass() == Herbivore.class) {
+            for (Grass grass : getGrassArray()) {
+                if (distance > myEntity.getCoordinate().subtractionCoordinate(grass.getCoordinate())) {
+                    distance = myEntity.getCoordinate().subtractionCoordinate(grass.getCoordinate());
+                    entity = grass;
+                }
 
+            }
         }
-        if (herbivored == null){
+
+
+        if (entity == null) {
             return null;
         }
 
-        return herbivored.getCoordinate();
+        return entity.getCoordinate();
 
     }
 
     //ошибки + название + что то еще
-    private Coordinate minDistanceGrass(Entity entity) {
 
-        int min = 1000;
-
-        Grass grassed = null;
-
-        for (Grass grass : setGrassArray()) {
-            if (min > entity.getCoordinate().subtractionCoordinate(grass.getCoordinate())) {
-                min = entity.getCoordinate().subtractionCoordinate(grass.getCoordinate());
-                grassed = grass;
-            }
-
-        }
-
-        if (grassed == null){
-            return null;
-        }
-
-        return grassed.getCoordinate();
-
-
-    }
-
-    private int intMinDistanceHerbivore(Entity entity) {
-
-        int min = 1000;
-        Herbivore herbivored = null;
-
-        for (Herbivore herbivore : setHerbivoreArray()) {
-
-            if (min > entity.getCoordinate().subtractionCoordinate(herbivore.getCoordinate())) {
-                min = entity.getCoordinate().subtractionCoordinate(herbivore.getCoordinate());
-                herbivored = herbivore;
-            }
-
-        }
-
-
-
-
-        return min;
-
-    }
-
-    //ошибки + название + что то еще
-    private int intMinDistanceGrass(Entity entity) {
-
-        int min = 1000;
-
-        Grass grassed = null;
-
-        for (Grass grass : setGrassArray()) {
-            if (min > entity.getCoordinate().subtractionCoordinate(grass.getCoordinate())) {
-                min = entity.getCoordinate().subtractionCoordinate(grass.getCoordinate());
-                grassed = grass;
-            }
-
-        }
-
-        return min;
-
-
-    }
-
-    private HashMap<Coordinate, Creature> copyCreature(HashMap<Coordinate, Entity> entityMap) {
+    private HashMap<Coordinate, Creature> getCreatureHashMap() {
 
         HashMap<Coordinate, Creature> temp = new HashMap<>();
 
@@ -311,39 +198,54 @@ public class Map {
         return temp;
     }
 
-    //еще что то в блок добавить
-    private int[][] arrBlock(Creature entity) {
+    //изменить
+    private int[][] getBlocksArray(Creature entity) {
 
-        int[][] arr = new int[entityMap.size()][2];
-//        {cow, gras, predator, cow, pretator}
+        int[][] arr = null;
+
+        if (entity.getClass() == Predator.class) {
+            arr = new int[entityMap.size() - 1 - getHerbivoreArray().size()][2];
+        } else if (entity.getClass() == Herbivore.class) {
+            arr = new int[entityMap.size() - 1 - getGrassArray().size()][2];
+        }
+
 
         int i = 0;
         for (var entry : entityMap.entrySet()) {
 
-            if (entry.getValue() == entity){
+            if (entry.getValue() == entity) {
                 continue;
-            }if (entity.getClass() == Predator.class  && entry.getValue().getClass() != Herbivore.class) {
+            }
+            if (entity.getClass() == Predator.class && entry.getValue().getClass() != Herbivore.class) {
                 arr[i][0] = entry.getValue().getCoordinate().getCoordinateY();
                 arr[i][1] = entry.getValue().getCoordinate().getCoordinateX();
 
                 i++;
             }
 
-            if(entity.getClass() == Herbivore.class  && entry.getValue().getClass() != Grass.class){
+            if (entity.getClass() == Herbivore.class && entry.getValue().getClass() != Grass.class) {
                 arr[i][0] = entry.getValue().getCoordinate().getCoordinateY();
                 arr[i][1] = entry.getValue().getCoordinate().getCoordinateX();
 
                 i++;
             }
-
-
-
 
 
         }
         return arr;
 
 
+    }
+
+    private boolean checkExistenceEntity(java.util.Map.Entry<Coordinate, Creature> entity) {
+
+        boolean flag = false;
+
+        for (var entry : entityMap.entrySet()) {
+            if (Objects.equals(entry.getKey(), entity)) flag = true;
+        }
+
+        return flag;
     }
 
 }
