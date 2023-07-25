@@ -2,7 +2,7 @@ package Models;
 
 public abstract class Creature extends Entity{
 
-    private int speed = 1;
+    private int speed = 2;
     private int HP = 5;
 
     @Override

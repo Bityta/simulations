@@ -94,7 +94,6 @@ public class Map {
 
         for (var entry : copyCreature(entityMap).entrySet()) {
 
-
             //скорость реализовать через цикл
 
 
@@ -148,8 +147,6 @@ public class Map {
                 addEntity(entry.getValue());
 
             }
-
-
 
 
         }
