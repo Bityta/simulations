@@ -102,10 +102,18 @@ public class Map {
             int rows = getWidthMap();
             int cols = getHeightMap();
 
-            Grass test = minDistanceGrass(entry.getValue());
+            Coordinate test = null;
+
+            if (entry.getValue().getClass() == Herbivore.class) {
+                test = minDistanceGrass(entry.getValue());
+            } else if (entry.getValue().getClass() == Predator.class) {
+                test = minDistanceHerbivore(entry.getValue());
+            }
+
+
             Node finalNode;
             if (test != null) {
-                finalNode = new Node(test.getCoordinate().getCoordinateY(), test.getCoordinate().getCoordinateX());
+                finalNode = new Node(test.getCoordinateY(), test.getCoordinateX());
             } else {
                 finalNode = new Node(entry.getValue().getCoordinate().getCoordinateY(), entry.getValue().getCoordinate().getCoordinateX());
             }
@@ -122,7 +130,7 @@ public class Map {
 
             List<Node> path = aStar.findPath();
 
-
+            //вот тут делаем скорость
             if (path.size() > 2) {
 
                 deleteEntity(entry.getKey());
@@ -136,7 +144,7 @@ public class Map {
                 //съесть ударить и тд
                 //для коровы пока что
 
-                deleteEntity(test.getCoordinate());
+                deleteEntity(test);
 
 
                 deleteEntity(entry.getKey());
@@ -204,7 +212,7 @@ public class Map {
 
     //ошибки + название + что то еще
 
-    private Herbivore minDistanceHerbivore(Entity entity) {
+    private Coordinate minDistanceHerbivore(Entity entity) {
 
         int min = 1000;
         Herbivore herbivored = null;
@@ -217,13 +225,16 @@ public class Map {
             }
 
         }
+        if (herbivored == null){
+            return null;
+        }
 
-        return herbivored;
+        return herbivored.getCoordinate();
 
     }
 
     //ошибки + название + что то еще
-    private Grass minDistanceGrass(Entity entity) {
+    private Coordinate minDistanceGrass(Entity entity) {
 
         int min = 1000;
 
@@ -237,7 +248,11 @@ public class Map {
 
         }
 
-        return grassed;
+        if (grassed == null){
+            return null;
+        }
+
+        return grassed.getCoordinate();
 
 
     }
@@ -255,6 +270,9 @@ public class Map {
             }
 
         }
+
+
+
 
         return min;
 
@@ -296,15 +314,30 @@ public class Map {
     //еще что то в блок добавить
     private int[][] arrBlock(Creature entity) {
 
-        int[][] arr = new int[entityMap.size() - 1][2];
+        int[][] arr = new int[entityMap.size()][2];
+//        {cow, gras, predator, cow, pretator}
 
         int i = 0;
         for (var entry : entityMap.entrySet()) {
-            if (entry.getValue() != entity && entry.getValue().getClass() != Grass.class) {
+
+            if (entry.getValue() == entity){
+                continue;
+            }if (entity.getClass() == Predator.class  && entry.getValue().getClass() != Herbivore.class) {
                 arr[i][0] = entry.getValue().getCoordinate().getCoordinateY();
                 arr[i][1] = entry.getValue().getCoordinate().getCoordinateX();
+
                 i++;
             }
+
+            if(entity.getClass() == Herbivore.class  && entry.getValue().getClass() != Grass.class){
+                arr[i][0] = entry.getValue().getCoordinate().getCoordinateY();
+                arr[i][1] = entry.getValue().getCoordinate().getCoordinateX();
+
+                i++;
+            }
+
+
+
 
 
         }
